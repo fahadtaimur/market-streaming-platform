@@ -52,9 +52,22 @@ dev = [
     "ipykernel>=6.29.0,<6.30.0",
     "pip-audit>=2.7.0,<2.8.0",
     "pre-commit>=3.7.0,<4.0.0",
+    "nbqa>=1.8.0,<2.0.0",
     # printing
     "rich"
 ]
 
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.format]
+indent-style = "space"
+quote-style = "double"
+
+[tool.ruff.lint.per-file-ignores]
+"*.ipynb" = ["E402"]
+
 [tool.uv]
-package = false
+package = true
+
+[tool.pytest.ini_options]

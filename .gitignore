@@ -13,9 +13,9 @@ dist/
 build/
 
 # notebooks, other
-notebooks/
 .ipynb_checkpoints/
 organization.txt
+strategy_backlog.txt
 
 # data and models
 *.csv
