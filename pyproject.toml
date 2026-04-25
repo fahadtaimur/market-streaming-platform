@@ -1,0 +1,60 @@
+[project]
+name = "market-streaming-platform"
+version = "0.1.0"
+description = "Real-time market data streaming via Alpaca WebSocket"
+requires-python = ">=3.12"
+dependencies = [
+    # data ingestion & streaming
+    "alpaca-py>=0.26.0,<0.35.0",
+    "yfinance>=0.2.40,<0.3.0",
+    "openbb>=4.3.0,<5.0.0",
+
+    # data & transport
+    "aiohttp>=3.10.11,<4.0.0",
+    "websockets>=15.0,<16.0",
+    "pandas>=2.3.2,<3.0.0",
+    "duckdb>=1.0.0,<1.2.0",
+    "msgpack>=1.0.7,<1.1.0",
+
+    # technical analysis
+    "pandas-ta>=0.4.67b0,<0.5.0",
+
+    # ML
+    "xgboost>=2.0.0,<2.2.0",
+    "scikit-learn>=1.4.0,<1.6.0",
+    "shap>=0.44.0,<0.46.0",
+
+    # portfolio optimisation & backtesting
+    "riskfolio-lib>=6.0.0,<7.0.0",
+    "vectorbt>=0.26.0,<0.27.0",
+    "pyfolio-reloaded>=0.9.0,<0.10.0",
+    "empyrical-reloaded>=0.5.0,<0.6.0",
+
+    # MLOps
+    "mlflow>=3.11.1,<4.0.0",
+    "evidently>=0.4.30,<0.5.0",
+
+    # utils
+    "pyyaml>=6.0.0,<7.0.0",
+    "python-dotenv>=1.2.2,<2.0.0",
+    "nest-asyncio>=1.6.0,<1.7.0",
+
+    # security overrides for transitive deps
+    "python-multipart>=0.0.26",
+    "starlette>=0.47.2",
+    "lxml>=6.1.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3,<10.0.0",
+    "pytest-asyncio>=0.23.0,<0.24.0",
+    "ipykernel>=6.29.0,<6.30.0",
+    "pip-audit>=2.7.0,<2.8.0",
+    "pre-commit>=3.7.0,<4.0.0",
+    # printing
+    "rich"
+]
+
+[tool.uv]
+package = false

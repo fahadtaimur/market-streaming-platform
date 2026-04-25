@@ -1,0 +1,36 @@
+# credentials
+.env
+
+# python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# notebooks, other
+notebooks/
+.ipynb_checkpoints/
+organization.txt
+
+# data and models
+*.csv
+*.parquet
+*.db
+*.duckdb
+signals/models/*
+!signals/models/.gitkeep
+
+# os
+.DS_Store
+Thumbs.db
+
+# editors
+.vscode/
+.idea/
+*.swp
+reference/

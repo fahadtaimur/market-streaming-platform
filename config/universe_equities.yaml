@@ -1,0 +1,10 @@
+screener:
+  exchanges:
+    - NMS   # Nasdaq Global Select Market
+    - NGM   # Nasdaq Global Market
+    - NCM   # Nasdaq Capital Market
+    - NYQ   # New York Stock Exchange
+    - ASE   # NYSE American (formerly AMEX)
+  min_price: 20.0
+  top_n_by_volume: 100
+  screener_limit: 500
