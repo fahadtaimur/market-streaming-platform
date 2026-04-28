@@ -48,7 +48,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pytest>=9.0.3,<10.0.0",
-    "pytest-asyncio>=0.23.0,<0.24.0",
+    "pytest-asyncio>0.27.0",
     "ipykernel>=6.29.0,<6.30.0",
     "pip-audit>=2.7.0,<2.8.0",
     "pre-commit>=3.7.0,<4.0.0",
@@ -61,6 +61,9 @@ dev = [
 [tool.ruff]
 line-length = 88
 
+[tool.ruff.lint]
+ignore = ["PIE790"]
+
 [tool.ruff.format]
 indent-style = "space"
 quote-style = "double"
@@ -72,3 +75,9 @@ quote-style = "double"
 package = true
 
 [tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+filterwarnings = [
+    "ignore::DeprecationWarning:openbb_core",
+    "ignore::pydantic.warnings.PydanticDeprecatedSince212",
+]
