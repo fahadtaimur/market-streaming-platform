@@ -1,4 +1,4 @@
-.PHONY: install lint format test audit nb-lint nb-format nb-clean hooks help
+.PHONY: install lint format test test-int test-all audit nb-lint nb-format nb-clean hooks help
 
 install:
 	uv sync --dev
@@ -15,6 +15,12 @@ format:
 test:
 	uv run pytest tests/ -v
 
+test-int:
+	uv run pytest -m integration -v
+
+test-all:
+	uv run pytest -v
+
 nb-lint:
 	uv run nbqa "ruff check" notebooks/ --fix
 
@@ -28,12 +34,14 @@ audit:
 	uv run pip-audit
 
 help:
-	@echo "install     install all dependencies"
-	@echo "hooks       install pre-commit hooks"
-	@echo "lint        lint src/ via pre-commit"
-	@echo "format      format src/ via pre-commit"
-	@echo "test        run test suite"
-	@echo "nb-lint     lint notebook cells"
-	@echo "nb-format   format notebook cells"
-	@echo "nb-clean    lint + format notebooks in one step"
-	@echo "audit       check dependencies for vulnerabilities"
+	@echo "install          install all dependencies"
+	@echo "hooks            install pre-commit hooks"
+	@echo "lint             lint src/ via pre-commit"
+	@echo "format           format src/ via pre-commit"
+	@echo "test             run unit tests"
+	@echo "test-int         run integration tests only"
+	@echo "test-all         run all tests"
+	@echo "nb-lint          lint notebook cells"
+	@echo "nb-format        format notebook cells"
+	@echo "nb-clean         lint + format notebooks in one step"
+	@echo "audit            check dependencies for vulnerabilities"

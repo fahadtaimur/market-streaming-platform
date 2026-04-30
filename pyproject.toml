@@ -81,3 +81,4 @@ filterwarnings = [
     "ignore::DeprecationWarning:openbb_core",
     "ignore::pydantic.warnings.PydanticDeprecatedSince212",
 ]
+markers = ["integration: tests that hit external services"]
