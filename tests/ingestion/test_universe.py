@@ -1,10 +1,20 @@
-"""Unit tests for msp.ingestion.universe.stock_screener."""
+"""Unit tests for msp.ingestion.universe.stock_screener. Integration tests for discovery endpoints."""
 
 from unittest.mock import MagicMock, patch
 
 import pandas as pd
+import pytest
 
-from msp.ingestion.universe import stock_screener
+from msp.ingestion.universe import (
+    stock_screener,
+    get_gainers,
+    get_losers,
+    get_active,
+    get_growth_tech,
+    get_aggressive_small_caps,
+    get_undervalued_growth,
+    get_undervalued_large_caps,
+)
 
 SAMPLE_ROWS = [
     {"symbol": "AAPL", "exchange": "NMS", "price": 180.0, "volume": 1_000_000},
@@ -37,3 +47,53 @@ def test_passes_screener_limit():
         stock_screener(screener_limit=250)
 
     mock_obb.equity.screener.assert_called_once_with(limit=250)
+
+
+# Discovery
+@pytest.mark.integration
+def test_get_gainers_returns_dataframe():
+    df = get_gainers()
+    assert isinstance(df, pd.DataFrame)
+    assert not df.empty
+
+
+@pytest.mark.integration
+def test_get_losers_returns_dataframe():
+    df = get_losers()
+    assert isinstance(df, pd.DataFrame)
+    assert not df.empty
+
+
+@pytest.mark.integration
+def test_get_active_returns_dataframe():
+    df = get_active()
+    assert isinstance(df, pd.DataFrame)
+    assert not df.empty
+
+
+@pytest.mark.integration
+def test_get_growth_tech_returns_dataframe():
+    df = get_growth_tech()
+    assert isinstance(df, pd.DataFrame)
+    assert not df.empty
+
+
+@pytest.mark.integration
+def test_get_aggressive_small_caps_returns_dataframe():
+    df = get_aggressive_small_caps()
+    assert isinstance(df, pd.DataFrame)
+    assert not df.empty
+
+
+@pytest.mark.integration
+def test_get_undervalued_growth_returns_dataframe():
+    df = get_undervalued_growth()
+    assert isinstance(df, pd.DataFrame)
+    assert not df.empty
+
+
+@pytest.mark.integration
+def test_get_undervalued_large_caps_returns_dataframe():
+    df = get_undervalued_large_caps()
+    assert isinstance(df, pd.DataFrame)
+    assert not df.empty

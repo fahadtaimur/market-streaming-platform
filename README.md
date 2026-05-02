@@ -1,28 +1,42 @@
 # Market Streaming Platform [In Progress]
 
-A Python platform for market data ingestion, signal research, and portfolio analytics.
+A Python platform for market data ingestion, signal research, and simulated order execution.
 
 ## What's here
 
-**`src/msp/`** — installable Python package  
-- `ingestion/universe.py` — equity universe construction via OpenBB screener
+**`src/msp/ingestion/`**
+- `universe.py` — equity universe construction via OpenBB screener and discovery endpoints
+- `historical.py` — historical data loaders for equities, fixed income, macro, FX, fundamentals, commodities, and news
 
-**`notebooks/`** — research and analysis  
-- `00_data_feeds.ipynb` — reference for all data sources (equities, fixed income, macro, SEC filings)  
-- `01_analytics.ipynb` — strategy research and signal analysis
+**`src/msp/execution/`**
+- `broker.py` — abstract `Broker` interface with `Order`, `Position`, and `AccountInfo` value objects
+- `memory_broker.py` — in-memory broker for local backtesting and dry-run mode
+
+**`notebooks/`** — research and exploration
+- `00_data_feeds.ipynb` — reference for all data sources
+- `01_EDA.ipynb` — strategy research and signal analysis
 
 ## Setup
 
 ```bash
 uv sync --dev
+cp .env.example .env  # add FRED_API_KEY and any other credentials
+```
+
+## Running tests
+
+```bash
+make test        # unit tests only
+make test-int    # integration tests (requires credentials)
+make test-all    # everything
 ```
 
 ## Stack
 
-- [OpenBB](https://openbb.co/) — market data routing (equities, macro, SEC EDGAR)
-- [Alpaca](https://alpaca.markets/) — real-time WebSocket streaming
-- [DuckDB](https://duckdb.org/) — local analytical storage
+- [OpenBB](https://openbb.co/) — market data routing (equities, macro, SEC EDGAR, FX)
+- [Alpaca](https://alpaca.markets/) — brokerage and real-time streaming (planned)
+- [DuckDB](https://duckdb.org/) — local analytical storage (planned)
 - [pandas](https://pandas.pydata.org/) / [pandas-ta](https://github.com/twopirllc/pandas-ta) — data wrangling and technical indicators
-- [XGBoost](https://xgboost.readthedocs.io/) / [scikit-learn](https://scikit-learn.org/) — ML models
-- [Riskfolio-Lib](https://riskfolio-lib.readthedocs.io/) — portfolio optimisation
-- [MLflow](https://mlflow.org/) — experiment tracking
+- [XGBoost](https://xgboost.readthedocs.io/) / [scikit-learn](https://scikit-learn.org/) — ML models (planned)
+- [Riskfolio-Lib](https://riskfolio-lib.readthedocs.io/) — portfolio optimisation (planned)
+- [MLflow](https://mlflow.org/) — experiment tracking (planned)
