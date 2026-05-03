@@ -3,6 +3,7 @@
 import pytest
 import pandas as pd
 
+from tests.helpers import assert_valid_dataframe
 from msp.ingestion.historical import (
     get_historical_equity_price,
     get_intraday_equity_bars,
@@ -31,12 +32,6 @@ SYMBOL = "AAPL"
 SYMBOLS = ["AAPL", "MSFT"]
 START_DATE = "2024-01-01"
 END_DATE = "2024-03-31"
-
-
-def assert_valid_dataframe(df: pd.DataFrame, expected_columns: set) -> None:
-    assert isinstance(df, pd.DataFrame)
-    assert not df.empty
-    assert expected_columns.issubset(df.columns)
 
 
 @pytest.mark.integration
