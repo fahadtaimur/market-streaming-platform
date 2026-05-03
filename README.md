@@ -14,7 +14,6 @@ A Python platform for market data ingestion, signal research, and simulated orde
 
 **`notebooks/`** — research and exploration
 - `00_data_feeds.ipynb` — reference for all data sources
-- `01_EDA.ipynb` — strategy research and signal analysis
 
 ## Setup
 

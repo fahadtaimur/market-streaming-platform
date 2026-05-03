@@ -5,6 +5,7 @@ import pandas as pd
 
 from msp.ingestion.historical import (
     get_historical_equity_price,
+    get_intraday_equity_bars,
     get_equity_profile,
     get_insider_trades,
     get_historical_dividends,
@@ -44,6 +45,51 @@ def test_get_historical_equity_price_returns_ohlcv():
         symbol=SYMBOL, start_date=START_DATE, end_date=END_DATE
     )
     assert_valid_dataframe(df, {"open", "high", "low", "close", "volume"})
+
+
+@pytest.mark.integration
+def test_get_intraday_equity_bars_single_symbol():
+    df = get_intraday_equity_bars(
+        symbols=SYMBOL,
+        start_date="2026-01-01",
+        end_date="2026-01-01",
+    )
+    assert_valid_dataframe(
+        df,
+        {
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "timestamp",
+            "trade_count",
+            "symbol",
+        },
+    )
+
+
+@pytest.mark.integration
+def test_get_intraday_equity_bars_multiple_symbols():
+    df = get_intraday_equity_bars(
+        symbols=SYMBOLS,
+        start_date="2026-01-01",
+        end_date="2026-01-01",
+    )
+    assert_valid_dataframe(
+        df,
+        {
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "timestamp",
+            "trade_count",
+            "symbol",
+        },
+    )
+    assert set(df["symbol"]) == set(SYMBOLS)
 
 
 @pytest.mark.integration

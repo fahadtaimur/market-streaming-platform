@@ -54,6 +54,7 @@ dev = [
     "pre-commit>=3.7.0,<4.0.0",
     "nbqa>=1.8.0,<2.0.0",
     "pandas-stubs>=2.0.0,<3.0.0",
+    "types-requests>=2.32.0,<3.0.0",
     # printing
     "rich"
 ]

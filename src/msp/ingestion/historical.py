@@ -2,12 +2,23 @@
 
 import os
 from datetime import date
+import time
 
+import requests
+from dotenv import load_dotenv
 import pandas as pd
 from openbb import obb
 
+load_dotenv()
+
 # Remove later - call from runner
 obb.user.credentials.fred_api_key = os.getenv("FRED_API_KEY")
+
+# alpaca market
+headers = {
+    "APCA-API-KEY-ID": os.getenv("ALPACA_API_KEY"),
+    "APCA-API-SECRET-KEY": os.getenv("ALPACA_SECRET_KEY"),
+}
 
 
 # Equity
@@ -37,6 +48,118 @@ def get_historical_equity_price(
         interval=interval,
         **kwargs,
     ).to_dataframe()
+
+
+def get_intraday_equity_bars(
+    symbols: str | list[str],
+    start_date: str,
+    end_date: str,
+    limit: int = 10_000,
+    frequency_timeframe: str = "1Min",
+    timeout: int = 30,
+    **kwargs,
+) -> pd.DataFrame:
+    """Fetch intraday OHLCV bars for one or more symbols via Alpaca.
+
+    Args:
+        symbols: single ticker or list of tickers
+        start_date: start of the date range (YYYY-MM-DD)
+        end_date: end of the date range (YYYY-MM-DD)
+        limit: max bars per page, defaults to 10000
+        frequency_timeframe: bar frequency — e.g. "1Min", "5Min", "1Hour", "1Day"
+        **kwargs: additional Alpaca bars parameters (e.g. feed, adjustment, sort)
+    """
+    params = {
+        **kwargs,
+        "timeframe": frequency_timeframe,
+        "start": start_date,
+        "end": end_date,
+        "limit": limit,
+    }
+
+    is_multi_symbol = isinstance(symbols, list)
+    if not is_multi_symbol:
+        endpoint = f"https://data.alpaca.markets/v2/stocks/{symbols}/bars"
+    else:
+        endpoint = "https://data.alpaca.markets/v2/stocks/bars"
+        params["symbols"] = ",".join(symbols)
+
+    bars: dict | list = [] if not is_multi_symbol else {}
+
+    while True:
+        try:
+            response = requests.get(
+                url=endpoint,
+                headers=headers,
+                params=params,
+                timeout=timeout,
+            )
+            response.raise_for_status()
+        except requests.exceptions.Timeout:
+            raise TimeoutError(
+                f"Alpaca request timed out after {timeout}s, try increasing timeout"
+            )
+        except requests.exceptions.ConnectionError:
+            raise ConnectionError(
+                "Could not reach Alpaca API: Check network connection"
+            )
+        except requests.exceptions.HTTPError as e:
+            status = e.response.status_code
+            if status == 401:
+                raise PermissionError(
+                    "Alpaca authentication failed: Check ALPACA_API_KEY and ALPACA_SECRET_KEY in .env"
+                )
+            if status == 403:
+                raise PermissionError(
+                    "Alpaca access denied: Your plan may not include this data"
+                )
+            if status == 429:
+                raise RuntimeError(
+                    "Alpaca rate limit exceeded: Reduce request frequency or increase timeout"
+                )
+            raise RuntimeError(f"Alpaca request failed with HTTP {status}: {e}")
+
+        rate_limit_remaining = int(response.headers["X-Ratelimit-Remaining"])
+        reset_at_time = int(response.headers["X-Ratelimit-Reset"])
+        if rate_limit_remaining < 5:
+            sleep_for = max(reset_at_time - time.time(), 0) + 1
+            time.sleep(sleep_for)
+
+        try:
+            data = response.json()
+            if not is_multi_symbol:
+                bars.extend(data["bars"])
+            else:
+                for symbol, records in data["bars"].items():
+                    bars.setdefault(symbol, []).extend(records)
+        except KeyError as e:
+            raise ValueError(
+                f"Unexpected Alpaca response structure — missing key {e}: {data}"
+            )
+
+        if not data["next_page_token"]:
+            break
+        params["page_token"] = data["next_page_token"]
+
+    columns = {
+        "o": "open",
+        "h": "high",
+        "l": "low",
+        "c": "close",
+        "v": "volume",
+        "t": "timestamp",
+        "vw": "vwap",
+        "n": "trade_count",
+    }
+
+    if not is_multi_symbol:
+        df = pd.DataFrame(bars).assign(symbol=symbols).rename(columns=columns)
+    else:
+        frames = [pd.DataFrame(val).assign(symbol=key) for key, val in bars.items()]
+        df = pd.concat(frames, ignore_index=True).rename(columns=columns)
+
+    df["timestamp"] = pd.to_datetime(df["timestamp"], utc=True)
+    return df
 
 
 def get_equity_profile(
