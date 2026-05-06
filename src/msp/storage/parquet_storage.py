@@ -17,6 +17,7 @@ class ParquetPriceStorage(PriceStorage):
     def __init__(self, base_path: Path = _PROJECT_ROOT / "data" / "bars"):
         self._base_path = base_path
         self._sql_con = duckdb.connect()
+        self._sql_con.execute("SET TimeZone = 'UTC'")
 
     def write(self, df: pd.DataFrame) -> None:
         """Write OHLCV bars to storage. DataFrame must contain: symbol, timestamp, open, high, low, close, volume."""
