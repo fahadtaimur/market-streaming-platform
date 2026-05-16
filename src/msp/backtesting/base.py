@@ -69,6 +69,8 @@ def train_test_split(
         Tuple of ``(train, test)`` DataFrames. Both are independent slices;
         mutating either does not affect the original.
     """
+    if tz is None and hasattr(df.index, "tz") and df.index.tz is not None:
+        tz = str(df.index.tz)
     ts = pd.Timestamp(split_date, tz=tz) if tz else pd.Timestamp(split_date)
     train = df.loc[df.index < ts]
     test = df.loc[df.index >= ts]
