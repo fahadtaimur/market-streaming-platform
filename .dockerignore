@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+*.egg-info/
+
+# Environment
+.env
+.env.*
+
+# Dev tooling
+.git/
+.gitignore
+.pre-commit-config.yaml
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# Notebooks and reference material
+notebooks/
+
+# Data and model artefacts
+data/
+*.parquet
+*.duckdb
+
+# Tests
+tests/
+
+# Docs
+README.md
+Makefile
