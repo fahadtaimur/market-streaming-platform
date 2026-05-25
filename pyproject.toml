@@ -9,6 +9,9 @@ dependencies = [
     "yfinance>=0.2.40,<0.3.0",
     "openbb>=4.3.0,<5.0.0",
 
+    # config
+    "pydantic-settings>=2.0.0,<3.0.0",
+
     # data & transport
     "redis>=5.0.0,<6.0.0",
     "aiohttp>=3.10.11,<4.0.0",

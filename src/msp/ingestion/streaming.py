@@ -1,16 +1,14 @@
 """Alpaca WebSocket producer: streams live bars into Redis Streams."""
 
 import logging
-import os
 import threading
 from abc import ABC, abstractmethod
 
 import redis
 from alpaca.data.live import CryptoDataStream, StockDataStream
 from alpaca.data.models import Bar
-from dotenv import load_dotenv
 
-load_dotenv()
+from msp.config.settings import settings
 
 logger = logging.getLogger(__name__)
 
@@ -46,8 +44,8 @@ class BaseStreamProducer(ABC):
     def __init__(
         self,
         symbols: list[str],
-        redis_host: str = "localhost",
-        redis_port: int = 6379,
+        redis_host: str = settings.redis_host,
+        redis_port: int = settings.redis_port,
         redis_client: redis.Redis | None = None,
     ) -> None:
         self.symbols = symbols
@@ -160,8 +158,8 @@ class CryptoStreamProducer(BaseStreamProducer):
 
     def _create_stream(self) -> CryptoDataStream:
         return CryptoDataStream(
-            api_key=os.environ["ALPACA_API_KEY"],
-            secret_key=os.environ["ALPACA_SECRET_KEY"],
+            api_key=settings.alpaca_api_key,
+            secret_key=settings.alpaca_secret_key,
         )
 
 
@@ -185,6 +183,6 @@ class StockStreamProducer(BaseStreamProducer):
 
     def _create_stream(self) -> StockDataStream:
         return StockDataStream(
-            api_key=os.environ["ALPACA_API_KEY"],
-            secret_key=os.environ["ALPACA_SECRET_KEY"],
+            api_key=settings.alpaca_api_key,
+            secret_key=settings.alpaca_secret_key,
         )

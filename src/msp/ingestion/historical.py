@@ -1,23 +1,19 @@
 """Historical data loaders for equities, macro, fixed income, currency, and news."""
 
-import os
 from datetime import date
 import time
 
 import requests
-from dotenv import load_dotenv
 import pandas as pd
 from openbb import obb
 
-load_dotenv()
+from msp.config.settings import settings
 
-# Remove later - call from runner
-obb.user.credentials.fred_api_key = os.getenv("FRED_API_KEY")
+obb.user.credentials.fred_api_key = settings.fred_api_key
 
-# alpaca market
 headers = {
-    "APCA-API-KEY-ID": os.getenv("ALPACA_API_KEY"),
-    "APCA-API-SECRET-KEY": os.getenv("ALPACA_SECRET_KEY"),
+    "APCA-API-KEY-ID": settings.alpaca_api_key,
+    "APCA-API-SECRET-KEY": settings.alpaca_secret_key,
 }
 
 

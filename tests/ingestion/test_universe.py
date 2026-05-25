@@ -31,14 +31,13 @@ def _mock_obb(rows: list[dict]):
     return patch("msp.ingestion.universe.obb", mock)
 
 
-def test_no_exchange_filter_when_none():
-    """
-    exchanges=None skips exchange filtering — TSX ticker must appear in result.
-    """
+def test_none_uses_settings_default_exchanges():
+    """exchanges=None falls back to settings.universe_exchanges, non-US tickers are excluded."""
     with _mock_obb(SAMPLE_ROWS):
         result = stock_screener(exchanges=None, min_price=0.0)
 
-    assert "SHOP" in result
+    assert "AAPL" in result
+    assert "SHOP" not in result
 
 
 def test_passes_screener_limit():
