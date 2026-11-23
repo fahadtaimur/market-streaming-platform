@@ -5,6 +5,7 @@ from unittest.mock import MagicMock
 
 import pytest
 import fakeredis
+import pandas as pd
 
 from msp.ingestion.streaming import CryptoStreamProducer, StockStreamProducer
 
@@ -44,3 +45,19 @@ def producer(fake_redis):
 @pytest.fixture
 def producer_crypto(fake_redis):
     return CryptoStreamProducer(symbols=["BTC/USD", "ETH/USD"], redis_client=fake_redis)
+
+
+@pytest.fixture
+def raw_metrics() -> pd.DataFrame:
+    """Shaped like obb.equity.fundamental.metrics output, in yfinance's units."""
+    return pd.DataFrame(
+        {
+            "symbol": ["AAA", "NEQ", "NODEBT", "GAP"],
+            "market_cap": [5e9, 3e9, 8e9, 1e9],
+            "debt_to_equity": [150.0, None, None, None],
+            "dividend_yield": [2.5, 0.0, 0.0, 0.0],
+            "book_value": [10.0, -4.0, 12.0, 6.0],
+            "operating_margin": [0.12, 0.05, -0.08, 0.02],
+            "revenue_growth": [0.04, 0.10, 0.30, 0.01],
+        }
+    )
