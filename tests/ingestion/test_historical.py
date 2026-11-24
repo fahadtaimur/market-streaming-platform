@@ -1,11 +1,15 @@
 """Integration tests for historical data feeds."""
 
+from datetime import date
+from unittest.mock import MagicMock, patch
+
 import pytest
 import pandas as pd
 
 from tests.helpers import assert_valid_dataframe
 from msp.ingestion.historical import (
     get_historical_equity_price,
+    to_price_bars,
     get_intraday_equity_bars,
     get_equity_profile,
     get_insider_trades,
@@ -40,6 +44,46 @@ def test_get_historical_equity_price_returns_ohlcv():
         symbol=SYMBOL, start_date=START_DATE, end_date=END_DATE
     )
     assert_valid_dataframe(df, {"open", "high", "low", "close", "volume"})
+
+
+def test_get_historical_equity_price_adds_symbol_for_singl_ticker():
+    mock = MagicMock()
+    mock.equity.price.historical.return_value.to_dataframe.return_value = pd.DataFrame(
+        {"close": [100.0, 101.1]}
+    )
+    with patch("msp.ingestion.historical.obb", mock):
+        df = get_historical_equity_price(
+            symbol="NVDA", start_date="2026-01-01", end_date="2026-01-31"
+        )
+    assert (df["symbol"] == "NVDA").all()
+
+
+def test_to_price_bars_returns_utz_timestamp():
+    raw = pd.DataFrame(
+        {
+            "open": [100.0],
+            "high": [102.5],
+            "low": [99.1],
+            "close": [101.3],
+            "volume": [1000],
+            "dividend": [0.0],
+            "symbol": ["AAA"],
+        },
+        index=pd.Index([date(2026, 1, 2)], name="date"),
+    )
+
+    df = to_price_bars(raw)
+    assert list(df.columns) == [
+        "symbol",
+        "timestamp",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+    ]
+    assert str(df["timestamp"].dt.tz) == "UTC"
+    assert df.loc[0, "timestamp"] == pd.Timestamp("2026-01-02", tz="UTC")
 
 
 @pytest.mark.integration

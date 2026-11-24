@@ -36,7 +36,7 @@ def get_historical_equity_price(
         interval: bar frequency, e.g. "1d", "1h", "5m"
         **kwargs: forwarded to obb.equity.price.historical
     """
-    return obb.equity.price.historical(
+    df = obb.equity.price.historical(
         symbol=symbol,
         start_date=start_date,
         end_date=end_date,
@@ -44,6 +44,17 @@ def get_historical_equity_price(
         interval=interval,
         **kwargs,
     ).to_dataframe()
+
+    if "symbol" not in df.columns:
+        df["symbol"] = symbol if isinstance(symbol, str) else symbol[0]
+    return df
+
+
+def to_price_bars(raw: pd.DataFrame) -> pd.DataFrame:
+    """Convert get_historical_equity_price output to the PriceBar shape storage accepts."""
+    df = raw.reset_index().rename(columns={"date": "timestamp"})
+    df["timestamp"] = pd.to_datetime(df["timestamp"]).dt.tz_localize("UTC")
+    return df[["symbol", "timestamp", "open", "high", "low", "close", "volume"]]
 
 
 def get_intraday_equity_bars(
